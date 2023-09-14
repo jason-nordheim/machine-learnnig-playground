@@ -17,10 +17,8 @@ class SketchPad {
   private canvas: HTMLCanvasElement;
   private path: number[][];
   private isDrawing: boolean;
-  private size: number;
 
   constructor(container: Element, size = 400) {
-    this.size = size;
     this.canvas = document.createElement("canvas");
     this.canvas.width = size;
     this.canvas.height = size;
@@ -41,11 +39,9 @@ class SketchPad {
   }
 
   private getMouse(evt: MouseEvent) {
-    const { offsetX, offsetY, pageX, pageY } = evt;
-    const rect = this.canvas.getBoundingClientRect();
-    const x = Math.round(pageX - rect.left);
-    const y = Math.round(pageY - rect.top);
-    console.log({ x, y });
+    const { offsetX, offsetY } = evt;
+    const x = Math.round(offsetX);
+    const y = Math.round(offsetY);
     return [x, y];
   }
 
