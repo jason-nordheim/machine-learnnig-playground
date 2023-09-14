@@ -1,6 +1,8 @@
 const drawPath = (ctx: CanvasRenderingContext2D, path: number[][], color = "black") => {
   ctx.strokeStyle = color;
-  ctx.lineWidth = 1;
+  ctx.lineWidth = 2;
+  ctx.lineJoin = "round";
+  ctx.lineCap = "round";
   ctx.beginPath();
   const [x, y] = path[0];
   // console.log(`moving to: ${x},${y}`);
@@ -13,9 +15,15 @@ const drawPath = (ctx: CanvasRenderingContext2D, path: number[][], color = "blac
   ctx.stroke();
 };
 
+const drawPaths = (ctx: CanvasRenderingContext2D, paths: number[][][], color = "black") => {
+  for (const path of paths) {
+    drawPath(ctx, path);
+  }
+};
+
 class SketchPad {
   private canvas: HTMLCanvasElement;
-  private path: number[][];
+  private paths: number[][][];
   private isDrawing: boolean;
 
   constructor(container: Element, size = 400) {
@@ -28,7 +36,7 @@ class SketchPad {
 
     this.ctx.scale(1, 1);
 
-    this.path = [];
+    this.paths = [];
     this.isDrawing = false;
 
     this.addEventListeners();
@@ -47,19 +55,20 @@ class SketchPad {
 
   private reDraw() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.width);
-    drawPath(this.ctx, this.path);
+    drawPaths(this.ctx, this.paths);
   }
 
   private addEventListeners() {
     this.canvas.onmousedown = (evt) => {
       const mouse = this.getMouse(evt);
-      this.path = [mouse];
+      this.paths.push([mouse]);
       this.isDrawing = true;
     };
     this.canvas.onmousemove = (evt) => {
       if (this.isDrawing) {
         const mouse = this.getMouse(evt);
-        this.path.push(mouse);
+        const lastPath = this.paths[this.paths.length - 1];
+        lastPath.push(mouse);
         this.reDraw();
       }
     };
