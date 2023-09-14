@@ -1,0 +1,29 @@
+{
+  "name": "jn-drawing-common",
+  "private": false,
+  "version": "1.0.1",
+  "description": "A library of common utility functions",
+  "main": "./dist/jn-drawing-common.js",
+  "types": "./dist/jn-drawing-common.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/jn-drawing-common.js",
+      "require": "./dist/jn-drawing-common.umd.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "publish": "npm run build && npm publish"
+  },
+  "devDependencies": {
+    "typescript": "5.0.2",
+    "vite": "4.4.5",
+    "vite-plugin-dts": "3.5.3"
+  }
+}
