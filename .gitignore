@@ -7,3 +7,5 @@ python/myenv/jupyter/
 python/myenv/share
 
 .DS_Store
+
+data/dataset/
