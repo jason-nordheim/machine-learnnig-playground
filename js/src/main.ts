@@ -51,59 +51,55 @@ class SketchPad {
     drawPaths(this.ctx, this.paths);
   }
 
-  private getPosition(evt: MouseEvent | TouchEvent): [number, number] {
+  getPosition(evt: MouseEvent | TouchEvent): [number, number] {
     if (evt instanceof MouseEvent) {
       const { offsetX, offsetY } = evt;
       const x = Math.round(offsetX);
       const y = Math.round(offsetY);
       return [x, y];
     } else if (evt instanceof TouchEvent) {
+      evt.preventDefault();
       const loc = evt.touches[0];
-      const x = Math.round(loc.pageX - this.canvas.clientLeft);
-      const y = Math.round(loc.pageY - this.canvas.clientTop);
+      const rect = this.canvas.getBoundingClientRect();
+      const x = Math.round(loc.clientX);
+      const y = Math.round(loc.clientY - rect.top);
       return [x, y];
     }
     throw new Error("Unsupported event provided");
   }
 
-  private addEventListeners() {
-    const getPosition = (evt: MouseEvent | TouchEvent) => {
-      if (evt instanceof MouseEvent) {
-        const { offsetX, offsetY } = evt;
-        const x = Math.round(offsetX);
-        const y = Math.round(offsetY);
-        return [x, y];
-      } else if (evt instanceof TouchEvent) {
-        const loc = evt.touches[0];
-        const rect = this.canvas.getBoundingClientRect();
-        const x = Math.round(loc.clientX);
-        const y = Math.round(loc.clientY - rect.top);
-        return [x, y];
-      }
-      throw new Error("Unsupported event provided");
-    };
-    const handleStartPath = (evt: MouseEvent | TouchEvent) => {
-      const position = getPosition(evt);
+  private makeStartPathEventHandler() {
+    return (evt: MouseEvent | TouchEvent) => {
+      const position = this.getPosition(evt);
       this.paths.push([position]);
       this.isDrawing = true;
     };
-    const handleDragPath = (evt: MouseEvent | TouchEvent) => {
+  }
+
+  private makeDragPathEventHandler() {
+    return (evt: MouseEvent | TouchEvent) => {
       if (this.isDrawing) {
-        const position = getPosition(evt);
+        const position = this.getPosition(evt);
         const lastPath = this.paths[this.paths.length - 1];
         lastPath.push(position);
         this.reDraw();
       }
     };
-    const handleDragEnd = (_: MouseEvent | TouchEvent) => {
+  }
+
+  private makeDragEndEventHandler() {
+    return (_: MouseEvent | TouchEvent) => {
       this.isDrawing = false;
     };
-    this.canvas.onmousedown = handleStartPath;
-    this.canvas.onmousemove = handleDragPath;
-    this.canvas.onmouseup = handleDragEnd;
-    this.canvas.ontouchstart = handleStartPath;
-    this.canvas.ontouchmove = handleDragPath;
-    this.canvas.ontouchend = handleDragEnd;
+  }
+
+  private addEventListeners() {
+    this.canvas.onmousedown = this.makeStartPathEventHandler();
+    this.canvas.onmousemove = this.makeDragPathEventHandler();
+    this.canvas.onmouseup = this.makeDragEndEventHandler();
+    this.canvas.ontouchstart = this.makeStartPathEventHandler();
+    this.canvas.ontouchmove = this.makeDragPathEventHandler();
+    this.canvas.ontouchend = this.makeDragEndEventHandler();
   }
 }
 
