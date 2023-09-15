@@ -42,3 +42,11 @@ li {
   background-color: darkslategrey;
   color: white;
 }
+
+canvas {
+  background-color: white;
+  box-shadow: 0px 0px 10px 2px black;
+}
+.sketch-viewer {
+  margin: 10px 0;
+}
