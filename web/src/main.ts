@@ -1,4 +1,5 @@
-import { App } from "./App";
+import { AppSelector } from "./AppSelector";
+import { DataCreatorApp } from "./DataCreatorApp";
 
 export type SessionData = {
   name?: string;
@@ -6,9 +7,8 @@ export type SessionData = {
   drawings?: { [k: string]: number[][][] };
 };
 
-const container = document.querySelector("#app");
-if (!container) {
-  throw new Error("Cannot find sketch pad container");
+const appSelectorContainer = document.querySelector("#app-selector");
+if (!appSelectorContainer) {
+  throw new Error("Cannot find app-selector container");
 }
-
-const sketchPad = new App(container);
+const appSelector = new AppSelector(appSelectorContainer);

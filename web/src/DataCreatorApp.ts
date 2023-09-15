@@ -1,9 +1,9 @@
 import { SketchPad } from "./SketchPad";
 import { SessionData } from "./main";
 
-export class App {
+export class DataCreatorApp {
   private labels: string[] = ["car", "fish", "tree", "bicycle", "guitar", "pencil", "clock"];
-  private root: Element;
+  private container: Element;
   private instructions: HTMLSpanElement;
   private sketchPadContainerRef: HTMLDivElement;
   private inputContainerRef: HTMLDivElement;
@@ -14,13 +14,20 @@ export class App {
 
   private data: SessionData;
 
-  constructor(root: Element) {
+  constructor(container: Element) {
+    this.container = container;
+
     this.data = {
       name: "",
       sessionId: undefined,
       drawings: {},
     };
-    this.root = root;
+
+    const title = document.createElement("h1");
+    title.style.display = "flex";
+    title.style.justifyContent = "center";
+    title.innerText = "Data Creator";
+    this.container.appendChild(title);
 
     this.inputContainerRef = document.createElement("div");
     this.inputContainerRef.style.display = "flex";
@@ -47,8 +54,8 @@ export class App {
     this.inputContainerRef.appendChild(this.inputRef);
     this.inputContainerRef.appendChild(this.nextBtn);
 
-    this.root.appendChild(this.inputContainerRef);
-    this.root.appendChild(this.sketchPadContainerRef);
+    this.container.appendChild(this.inputContainerRef);
+    this.container.appendChild(this.sketchPadContainerRef);
   }
 
   private createStartHandler() {
@@ -110,5 +117,12 @@ export class App {
       anchor.click();
       document.body.removeChild(anchor);
     };
+  }
+
+  hide() {
+    (this.container as HTMLDivElement).style.display = "none";
+  }
+  show() {
+    (this.container as HTMLDivElement).style.visibility = "flex";
   }
 }
