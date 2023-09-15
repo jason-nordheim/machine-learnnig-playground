@@ -9,12 +9,12 @@ export default defineConfig({
     manifest: true,
     sourcemap: true,
     lib: {
-      entry: "./src/main.ts",
-      name: "main",
-      fileName: "main",
+      entry: "./src/index.ts",
+      name: "index",
+      fileName: "index",
     },
     rollupOptions: {
-      input: "./src/main.ts",
+      input: "./src/index.ts",
       plugins: [
         resolve(),
         typescriptPaths({
