@@ -76,5 +76,10 @@ canvas {
   overflow-y: scroll;
 }
 .sketch-viewer {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+.sketch-viewer > canvas {
   margin: 10px 10px;
 }

@@ -19,7 +19,7 @@ type CombinedData = {
 export class DataViewerApp {
   private container: Element;
   private inputRef: HTMLInputElement;
-  private rowContainerRef: HTMLDivElement;
+  private rowContainerRef?: HTMLDivElement;
 
   private data: CombinedData[] = [];
 
@@ -83,7 +83,7 @@ export class DataViewerApp {
     const entries = Object.entries(samples);
     for (let i = 0; i < entries.length; i++) {
       const [label, data] = entries[i];
-      new SketchViewer(dataContainer, data);
+      new SketchViewer(dataContainer, data, label);
     }
 
     return row;
