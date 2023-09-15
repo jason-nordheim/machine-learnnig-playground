@@ -1,7 +1,4 @@
-"use strict";
-/// <reference types="@types/node"/>
-
-const drawPath = (ctx: CanvasRenderingContext2D, path: number[][], color = "black") => {
+export const drawPath = (ctx: CanvasRenderingContext2D, path: number[][], color = "black") => {
   ctx.strokeStyle = color;
   ctx.lineWidth = 2;
   ctx.lineJoin = "round";
@@ -16,12 +13,10 @@ const drawPath = (ctx: CanvasRenderingContext2D, path: number[][], color = "blac
   ctx.stroke();
 };
 
-const drawPaths = (ctx: CanvasRenderingContext2D, paths: number[][][], color = "black") => {
+export const drawPaths = (ctx: CanvasRenderingContext2D, paths: number[][][], color = "black") => {
   if (paths && paths.length) {
     for (let i = 0; i < paths.length; i++) {
       drawPath(ctx, paths[i], color);
     }
   }
 };
-
-export { drawPath, drawPaths };
