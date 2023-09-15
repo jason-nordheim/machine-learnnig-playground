@@ -1,5 +1,5 @@
 import { createCanvas } from "canvas";
-import { drawPaths } from "../common/dist/main.js";
+import { drawPaths } from "jn-drawing-common";
 import { utils } from "./utils.js";
 import fs from "fs";
 
@@ -27,6 +27,7 @@ if (!fs.existsSync(constants.IMG_DIR)) {
 }
 
 const samples = [];
+const totalFiles = fileNames.length;
 fileNames.forEach((fn, i) => {
   const id = i + 1;
   const content = fs.readFileSync(`${constants.RAW_DIR}/${fn}`);
@@ -42,9 +43,8 @@ fileNames.forEach((fn, i) => {
     fs.writeFileSync(`${constants.JSON_DIR}/${id}.json`, JSON.stringify(drawings[label]));
 
     generateImageFile(`${constants.IMG_DIR}/${id}.png`);
-
-    utils.printProgress(id, fileNames.length * 8);
   }
+  utils.printProgress(id, totalFiles);
 });
 
 fs.writeFileSync(constants.SAMPLES, JSON.stringify(samples));
