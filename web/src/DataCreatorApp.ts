@@ -1,9 +1,9 @@
+import { AppBase } from "./App.Base";
 import { SketchPad } from "./SketchPad";
 import { SessionData } from "./main";
 
-export class DataCreatorApp {
+export class DataCreatorApp extends AppBase {
   private labels: string[] = ["car", "fish", "tree", "bicycle", "guitar", "pencil", "clock"];
-  private container: Element;
   private instructions: HTMLSpanElement;
   private sketchPadContainerRef: HTMLDivElement;
   private inputContainerRef: HTMLDivElement;
@@ -15,19 +15,13 @@ export class DataCreatorApp {
   private data: SessionData;
 
   constructor(container: Element) {
-    this.container = container;
+    super(container, "Data Creator");
 
     this.data = {
       name: "",
       sessionId: undefined,
       drawings: {},
     };
-
-    const title = document.createElement("h1");
-    title.style.display = "flex";
-    title.style.justifyContent = "center";
-    title.innerText = "Data Creator";
-    this.container.appendChild(title);
 
     this.inputContainerRef = document.createElement("div");
     this.inputContainerRef.style.display = "flex";

@@ -1,12 +1,5 @@
+import { AppBase } from "./App.Base";
 import { SketchViewer } from "./SketchViewer";
-
-const IMG_FILE_DIR = "../../data/dataset/img";
-
-type GroupedSampleData = {
-  id: number;
-  label: string;
-  student_name: string;
-};
 
 type CombinedData = {
   session: number;
@@ -16,20 +9,14 @@ type CombinedData = {
   };
 };
 
-export class DataViewerApp {
-  private container: Element;
+export class DataViewerApp extends AppBase {
   private inputRef: HTMLInputElement;
   private rowContainerRef?: HTMLDivElement;
 
   private data: CombinedData[] = [];
 
   constructor(container: Element) {
-    this.container = container;
-
-    // title
-    const title = document.createElement("h1");
-    title.innerText = "Data Viewer";
-    this.container.appendChild(title);
+    super(container, "Data Viewer");
 
     // upload input
     this.inputRef = document.createElement("input");
@@ -52,7 +39,6 @@ export class DataViewerApp {
     });
 
     // add to the dom
-    this.container.appendChild(title);
     this.container.appendChild(this.inputRef);
   }
 
