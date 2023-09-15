@@ -1,0 +1,10 @@
+{
+  "type": "module",
+  "scripts": {
+    "start": "node dataset_generator.js"
+  },
+  "dependencies": {
+    "canvas": "2.11.2",
+    "jn-drawing-common": "1.0.7"
+  }
+}
