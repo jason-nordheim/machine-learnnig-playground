@@ -2,9 +2,9 @@
 **/.ipynb_checkpoints
 **/bin
 
-python/myenv/lib
-python/myenv/jupyter/
-python/myenv/share
+linear-algebra-for-machine-learning/python/myenv/lib/
+linear-algebra-for-machine-learning/python/myenv/jupyter/
+linear-algebra-for-machine-learning/python/myenv/share
 
 .DS_Store
 
