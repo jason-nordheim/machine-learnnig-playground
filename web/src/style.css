@@ -7,6 +7,7 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   background-color: skyblue;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   width: 100%;
 }
@@ -47,6 +48,33 @@ canvas {
   background-color: white;
   box-shadow: 0px 0px 10px 2px black;
 }
+
+#data-creator {
+  display: flex;
+  justify-items: center;
+  flex-direction: column;
+}
+#data-creator > h1 {
+  display: flex;
+  justify-content: center;
+}
+#data-creator > input {
+  align-self: center;
+}
+
+.row-container {
+  display: flex;
+  flex-direction: column;
+}
+.row {
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+}
+.row-data {
+  display: flex;
+  overflow-y: scroll;
+}
 .sketch-viewer {
-  margin: 10px 0;
+  margin: 10px 10px;
 }

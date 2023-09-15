@@ -19,6 +19,7 @@ type CombinedData = {
 export class DataViewerApp {
   private container: Element;
   private inputRef: HTMLInputElement;
+  private rowContainerRef: HTMLDivElement;
 
   private data: CombinedData[] = [];
 
@@ -27,8 +28,6 @@ export class DataViewerApp {
 
     // title
     const title = document.createElement("h1");
-    title.style.display = "flex";
-    title.style.justifyContent = "center";
     title.innerText = "Data Viewer";
     this.container.appendChild(title);
 
@@ -58,11 +57,14 @@ export class DataViewerApp {
   }
 
   private makeRows() {
+    this.rowContainerRef = document.createElement("div");
+    this.rowContainerRef.classList.add("row-container");
     for (let i = 0; i < this.data.length; i++) {
       const userId = this.data[i].student;
       const row = this.makeRow(userId, this.data[i].drawings);
-      this.container.appendChild(row);
+      this.rowContainerRef.appendChild(row);
     }
+    this.container.appendChild(this.rowContainerRef);
   }
 
   private makeRow(userId: string, samples: { [k: string]: number[][][] }) {
@@ -74,10 +76,14 @@ export class DataViewerApp {
     rowLabel.innerText = userId;
     row.appendChild(rowLabel);
 
+    const dataContainer = document.createElement("div");
+    dataContainer.classList.add("row-data");
+    row.appendChild(dataContainer);
+
     const entries = Object.entries(samples);
     for (let i = 0; i < entries.length; i++) {
       const [label, data] = entries[i];
-      new SketchViewer(row, data);
+      new SketchViewer(dataContainer, data);
     }
 
     return row;
