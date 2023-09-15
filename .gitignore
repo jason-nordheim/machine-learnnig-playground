@@ -1,10 +1,12 @@
 **/etc
 **/.ipynb_checkpoints
 **/bin
+*.dat
 
 linear-algebra-for-machine-learning/python/myenv/lib/
 linear-algebra-for-machine-learning/python/myenv/jupyter/
 linear-algebra-for-machine-learning/python/myenv/share
+
 
 .DS_Store
 
