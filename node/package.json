@@ -1,7 +1,8 @@
 {
   "type": "module",
   "scripts": {
-    "start": "node dataset_generator.js"
+    "generate": "node dataset_generator.js",
+    "group": "node group_samples.js"
   },
   "dependencies": {
     "canvas": "2.11.2",
