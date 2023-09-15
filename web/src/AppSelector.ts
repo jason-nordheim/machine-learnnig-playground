@@ -48,6 +48,7 @@ export class AppSelector {
       }
       this.container.appendChild(this.dataCreatorContainer);
       this.dataCreator = new DataCreatorApp(this.dataCreatorContainer);
+      document.title = "Data Creator";
     };
 
     this.viewerBtn.onclick = () => {
@@ -56,6 +57,7 @@ export class AppSelector {
       }
       this.container.appendChild(this.dataViewerContainer);
       this.dataViewer = new DataViewerApp(this.dataViewerContainer);
+      document.title = "Data Viewer";
     };
   }
 }
