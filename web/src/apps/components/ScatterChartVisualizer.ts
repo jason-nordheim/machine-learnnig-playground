@@ -12,7 +12,9 @@ import {
   subtract,
 } from "../../helpers/math";
 import { drawPoint, drawText } from "../../helpers/drawingUtils";
-import { AxisLabels, ChartData, FeatureSpec, GenericData, Point, PointWithId } from "../../common";
+import { AxisLabels, ChartData, FeatureSpec, GenericData, Point, ExtendedPoint } from "../../common";
+
+type PointRenderOptions = "text" | "emoji" | "color";
 
 type ChartStyles = {
   bgColor: string;
@@ -23,6 +25,7 @@ type ChartStyles = {
 export type ScatterChartOptions = {
   size: number;
   labels: AxisLabels;
+  showPointsAs?: PointRenderOptions;
 };
 
 type DragInfo = {
@@ -44,9 +47,10 @@ type Bounds = {
   bottom: number;
 };
 
-const DEFAULT_OPTIONS = {
+const DEFAULT_OPTIONS: Required<ScatterChartOptions> = {
   size: 400,
   labels: { x: "x", y: "y" },
+  showPointsAs: "color",
 };
 
 const DEFAULT_STYLES = {
@@ -63,15 +67,17 @@ export class ScatterChartVisualizer {
   private size: number;
   private transparency: number;
   private axisLabels: AxisLabels;
+  private showPointAs: PointRenderOptions;
 
   private hoveredSample: any;
   private selectedSample: any;
+  private nearestSampleToMouse?: ExtendedPoint;
 
   private pixelBounds: Bounds;
   private dataBounds: Bounds;
   private defaultDataBounds: Bounds;
 
-  private pointsWithIds: PointWithId[] = [];
+  private pointsWithIds: ExtendedPoint[] = [];
 
   private dataTrans: DataTrans;
   private dragInfo: DragInfo;
@@ -85,6 +91,7 @@ export class ScatterChartVisualizer {
     this.size = options.size;
     this.transparency = styles?.transparency || DEFAULT_STYLES.transparency;
     this.axisLabels = options.labels;
+    this.showPointAs = options?.showPointsAs || DEFAULT_OPTIONS.showPointsAs;
 
     // setup canvas
     this.canvasRef = document.createElement("canvas");
@@ -143,7 +150,7 @@ export class ScatterChartVisualizer {
       (this.dataBounds.top + this.dataBounds.bottom) / 2,
     ];
 
-    const scale = this.dataTrans.scale;
+    const scale = this.dataTrans.scale ** 2;
     const scaledBounds = {
       left: lerp(center[0], newBounds.left, scale),
       right: lerp(center[0], newBounds.right, scale),
@@ -168,8 +175,14 @@ export class ScatterChartVisualizer {
         this.dragInfo.offset = subtract(this.dragInfo.start, this.dragInfo.end);
         const newOffset = add(this.dataTrans.offset, this.dragInfo.offset);
         this.updateDataBounds(newOffset);
-        this.draw();
       }
+      // hover logic
+      const pLoc = this.getMousePos(evt);
+      const dPoints = this.pointsWithIds.map((s) => remapPoint(this.dataBounds, this.pixelBounds, s.point));
+      // nearest search
+      const index = getNearest(pLoc, dPoints);
+      this.nearestSampleToMouse = this.pointsWithIds[index];
+      this.draw();
     };
 
     this.canvasRef.onmouseup = (evt) => {
@@ -194,8 +207,12 @@ export class ScatterChartVisualizer {
     this.ctx.clearRect(0, 0, this.canvasRef.width, this.canvasRef.height);
     this.drawAxis();
     this.ctx.globalAlpha = this.transparency;
-    this.drawSamples();
+    this.drawSamples([...this.pointsWithIds]);
     this.ctx.globalAlpha = 1;
+
+    if (this.nearestSampleToMouse) {
+      this.drawSamples([this.nearestSampleToMouse]);
+    }
   }
 
   private drawAxis() {
@@ -282,10 +299,24 @@ export class ScatterChartVisualizer {
     this.ctx.restore();
   }
 
-  private drawSamples() {
-    for (let i = 0; i < this.pointsWithIds.length; i++) {
-      const point = remapPoint(this.dataBounds, this.pixelBounds, this.pointsWithIds[i].point);
-      drawPoint(this.ctx, point);
+  private drawSamples(points: ExtendedPoint[]) {
+    for (let i = 0; i < points.length; i++) {
+      const point = remapPoint(this.dataBounds, this.pixelBounds, points[i].point);
+      switch (this.showPointAs) {
+        case "text":
+          const label = points[i].text;
+          if (label == undefined) throw new Error("no label provided");
+          drawText(this.ctx, { text: label, loc: point });
+          break;
+        case "emoji":
+          const emoji = points[i].altText;
+          if (emoji == undefined) throw new Error("no emoji provided");
+          drawText(this.ctx, { text: emoji, loc: point });
+          break;
+        default:
+          drawPoint(this.ctx, point, points[i]?.color);
+          break;
+      }
     }
   }
 

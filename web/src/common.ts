@@ -10,8 +10,11 @@ export type SessionData = {
 
 export type Point = [number, number];
 
-export type PointWithId = {
+export type ExtendedPoint = {
   point: Point;
+  text?: string;
+  altText?: string;
+  color?: string;
   id: string;
 };
 
@@ -40,7 +43,7 @@ export type FeatureSpec = {
 export type GenericData = { point: [number, number]; xLabel: string; yLabel: number; xDesc: string; yDesc: string };
 
 export type ChartData = {
-  points: PointWithId[];
+  points: ExtendedPoint[];
   axisLabels: { x: string; y: string };
 };
 

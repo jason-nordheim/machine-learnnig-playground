@@ -37,12 +37,12 @@ export const scale = (point: Point, scaler: number): Point => {
 };
 
 export const distance = (p1: Point, p2: Point) => {
-  return Math.sqrt((p1[0] - p2[0]) ** (p1[1] - p2[1]));
+  return Math.sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2);
 };
 
 export const getNearest = (loc: Point, points: Point[]) => {
   let minDistance = Number.MAX_SAFE_INTEGER;
-  let nearestIndex = -1;
+  let nearestIndex = 0;
 
   for (let i = 0; i < points.length; i++) {
     const p = points[i];

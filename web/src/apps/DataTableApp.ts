@@ -1,4 +1,4 @@
-import { ChartData, PointWithId } from "../common";
+import { ChartData, ExtendedPoint } from "../common";
 import { formatNumber } from "../helpers/math";
 import { AppBase } from "./App.Base";
 
@@ -33,7 +33,7 @@ const DEFAULTS = {
 };
 
 export class DataTableApp extends AppBase {
-  private data: PointWithId[] = [];
+  private data: ExtendedPoint[] = [];
   private axisLabels?: { x: string; y: string };
 
   constructor(container: Element, data: ChartData) {
