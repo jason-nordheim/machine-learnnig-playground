@@ -26,7 +26,7 @@ export class DataTableWithChart implements UnMountable {
 
   private setRootContainerStyles() {
     (this.rootContainer as HTMLDivElement).style.display = "grid";
-    (this.rootContainer as HTMLDivElement).style.gridTemplateColumns = `repeat(2, 1fr)`;
+    (this.rootContainer as HTMLDivElement).style.gridTemplateColumns = `30% 70%`;
   }
 
   unmount() {

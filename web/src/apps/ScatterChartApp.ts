@@ -11,14 +11,13 @@ export class ScatterChartApp extends AppBase {
 
   constructor(container: Element, data: ChartData) {
     super(container, "Scatter Chart");
-    const size = 300;
     this.chartContainer = document.createElement("div");
     this.chartContainer.style.position = "fixed";
-    this.chartContainer.style.left = "55%";
+    this.chartContainer.style.left = "33%";
     this.chartContainer.style.top = "30%";
     const options: ScatterChartOptions = {
       labels: { x: "km", y: "price" },
-      size: 300,
+      size: 400,
     };
     this.container.appendChild(this.chartContainer);
     this.chart = new ScatterChartVisualizer(this.chartContainer, data, options);

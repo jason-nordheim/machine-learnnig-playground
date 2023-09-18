@@ -220,9 +220,59 @@ export class ScatterChartVisualizer {
     this.ctx.setLineDash([]);
 
     // line labels
+    this.drawLineLabels();
+  }
+
+  private drawLineLabels() {
+    const { left, right, top, bottom } = this.pixelBounds;
+    const size = this.margin * 0.25;
     const dataMin = remapPoint(this.pixelBounds, this.dataBounds, [left, bottom]);
-    const dataMinValue = formatNumber(dataMin[0], 2);
-    drawText(this.ctx, { text: dataMinValue.toString(), loc: [left, bottom], size: size * 0.5 });
+    const xMinLabel = formatNumber(dataMin[0], 2);
+    drawText(this.ctx, {
+      text: xMinLabel.toString(),
+      loc: [left, bottom],
+      size,
+      align: "left",
+      vAlign: "top",
+    });
+
+    this.ctx.save();
+
+    const yMinLabel = formatNumber(dataMin[1], 2);
+    this.ctx.translate(left, bottom);
+    this.ctx.rotate(-Math.PI / 2);
+    drawText(this.ctx, {
+      text: yMinLabel.toString(),
+      loc: [0, 0],
+      size,
+      align: "left",
+      vAlign: "bottom",
+    });
+    this.ctx.restore();
+
+    const dataMax = remapPoint(this.pixelBounds, this.dataBounds, [right, top]);
+    const xMaxLabel = formatNumber(dataMax[0], 2);
+    drawText(this.ctx, {
+      text: xMaxLabel.toString(),
+      loc: [right, bottom],
+      size,
+      align: "right",
+      vAlign: "top",
+    });
+
+    this.ctx.save();
+
+    const yMaxLabel = formatNumber(dataMax[1], 2);
+    this.ctx.translate(left, top);
+    this.ctx.rotate(-Math.PI / 2);
+    drawText(this.ctx, {
+      text: yMaxLabel.toString(),
+      loc: [0, 0],
+      size,
+      align: "right",
+      vAlign: "bottom",
+    });
+    this.ctx.restore();
   }
 
   private drawSamples() {
