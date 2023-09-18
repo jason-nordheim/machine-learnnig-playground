@@ -2,6 +2,7 @@ import {
   add,
   distance,
   equals,
+  formatNumber,
   getNearest,
   invLerp,
   lerp,
@@ -194,8 +195,8 @@ export class ScatterChartVisualizer {
   private drawAxis() {
     const size = this.margin * 0.4;
     const { left, right, top, bottom } = this.pixelBounds;
-    drawText({
-      ctx: this.ctx,
+    // x-axis
+    drawText(this.ctx, {
       text: this.axisLabels.x,
       loc: [this.canvasRef.width / 2, bottom + this.margin / 2],
       size,
@@ -203,10 +204,25 @@ export class ScatterChartVisualizer {
 
     this.ctx.save();
 
+    // y-axis
     this.ctx.translate((left - this.margin) / 2, this.canvasRef.height / 2);
     this.ctx.rotate(-Math.PI / 2);
-    drawText({ ctx: this.ctx, text: this.axisLabels.y, loc: [0, size], size });
+    drawText(this.ctx, { text: this.axisLabels.y, loc: [0, size], size });
     this.ctx.restore();
+
+    // lines
+    this.ctx.moveTo(left, top);
+    this.ctx.lineTo(left, bottom);
+    this.ctx.lineTo(right, bottom);
+    this.ctx.lineWidth = 1;
+    this.ctx.strokeStyle = "lightgray";
+    this.ctx.stroke();
+    this.ctx.setLineDash([]);
+
+    // line labels
+    const dataMin = remapPoint(this.pixelBounds, this.dataBounds, [left, bottom]);
+    const dataMinValue = formatNumber(dataMin[0], 2);
+    drawText(this.ctx, { text: dataMinValue.toString(), loc: [left, bottom], size: size * 0.5 });
   }
 
   private drawSamples() {

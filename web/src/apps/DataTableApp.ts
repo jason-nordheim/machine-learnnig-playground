@@ -1,4 +1,5 @@
 import { ChartData, PointWithId } from "../common";
+import { formatNumber } from "../helpers/math";
 import { AppBase } from "./App.Base";
 
 const createTableCell = ({
@@ -58,17 +59,13 @@ export class DataTableApp extends AppBase {
       const row = document.createElement("div");
       row.classList.add("row");
       createTableCell({ value: this.data[i].id, inside: row, type: "id" });
-      const valueX = this.formatNumber(this.data[i].point[0], 2);
-      const valueY = this.formatNumber(this.data[i].point[1], 2);
+      const valueX = formatNumber(this.data[i].point[0], 2);
+      const valueY = formatNumber(this.data[i].point[1], 2);
       createTableCell({ value: valueX.toString(), inside: row, type: "data" });
       createTableCell({ value: valueY.toString(), inside: row, type: "data" });
       table.appendChild(row);
     }
 
     this.container.appendChild(table);
-  }
-
-  formatNumber(num: number, decimals: number) {
-    return num.toFixed(decimals);
   }
 }

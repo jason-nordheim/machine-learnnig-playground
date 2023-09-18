@@ -7,8 +7,7 @@ export const drawPoint = (ctx: CanvasRenderingContext2D, loc: Point, color: stri
   ctx.fill();
 };
 
-type DrawTextParams = {
-  ctx: CanvasRenderingContext2D;
+type TextDrawOptions = {
   text: string;
   loc: Point;
   align?: CanvasRenderingContext2D["textAlign"];
@@ -17,15 +16,10 @@ type DrawTextParams = {
   color?: string;
 };
 
-export const drawText = ({
-  ctx,
-  text,
-  loc,
-  align = "center",
-  vAlign = "middle",
-  size = 10,
-  color = "black",
-}: DrawTextParams) => {
+export const drawText = (
+  ctx: CanvasRenderingContext2D,
+  { text, loc, align = "center", vAlign = "middle", size = 10, color = "black" }: TextDrawOptions
+) => {
   ctx.textAlign = align;
   ctx.textBaseline = vAlign;
   ctx.font = `bold ${size}px Courier`;

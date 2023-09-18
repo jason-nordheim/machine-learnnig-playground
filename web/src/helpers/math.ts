@@ -56,3 +56,7 @@ export const getNearest = (loc: Point, points: Point[]) => {
 
   return nearestIndex;
 };
+
+export const formatNumber = (num: number, decimals: number) => {
+  return num.toFixed(decimals);
+};
