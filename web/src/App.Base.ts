@@ -17,4 +17,10 @@ export class AppBase {
     titleElement.style.justifyContent = "center";
     this.container.appendChild(titleElement);
   }
+
+  unmount() {
+    while (this.container.hasChildNodes()) {
+      this.container.removeChild(this.container.children[0]);
+    }
+  }
 }
