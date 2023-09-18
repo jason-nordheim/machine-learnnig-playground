@@ -20,13 +20,11 @@ type DataTableOptions = {
 
 export class DataTableApp extends AppBase {
   private data: ExtendedPoint[] = [];
-  private axisLabels?: { x: string; y: string };
 
   constructor(container: Element, data: ChartData, options: DataTableOptions) {
     super(container, "Data Table");
 
     this.data = data.points;
-    this.axisLabels = data.axisLabels;
 
     const table = document.createElement("div");
     table.classList.add("table");
