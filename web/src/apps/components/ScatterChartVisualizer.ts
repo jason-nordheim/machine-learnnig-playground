@@ -71,7 +71,6 @@ export class ScatterChartVisualizer {
 
   private hoveredSample: any;
   private selectedSample: any;
-  private nearestSampleToMouse?: ExtendedPoint;
 
   private pixelBounds: Bounds;
   private dataBounds: Bounds;
@@ -181,7 +180,13 @@ export class ScatterChartVisualizer {
       const dPoints = this.pointsWithIds.map((s) => remapPoint(this.dataBounds, this.pixelBounds, s.point));
       // nearest search
       const index = getNearest(pLoc, dPoints);
-      this.nearestSampleToMouse = this.pointsWithIds[index];
+      const nearest = this.pointsWithIds[index];
+      const dist = distance(dPoints[index], pLoc);
+      if (dist < this.margin / 2) {
+        this.hoveredSample = nearest;
+      } else {
+        this.hoveredSample = undefined;
+      }
       this.draw();
     };
 
@@ -210,9 +215,18 @@ export class ScatterChartVisualizer {
     this.drawSamples([...this.pointsWithIds]);
     this.ctx.globalAlpha = 1;
 
-    if (this.nearestSampleToMouse) {
-      this.drawSamples([this.nearestSampleToMouse]);
+    if (this.hoveredSample) {
+      this.emphasizeSample(this.hoveredSample);
     }
+  }
+
+  private emphasizeSample(sample: ExtendedPoint) {
+    const loc = remapPoint(this.dataBounds, this.pixelBounds, sample.point);
+    const gradient = this.ctx.createRadialGradient(loc[0], loc[1], 0, loc[0], loc[1], this.margin / 2);
+    gradient.addColorStop(0, sample.color || "white");
+    gradient.addColorStop(1, "rgba(255,255,255,0)");
+    drawPoint(this.ctx, loc, gradient, this.margin / 2);
+    this.drawSamples([sample]);
   }
 
   private drawAxis() {
