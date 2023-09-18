@@ -232,7 +232,7 @@ export class ScatterChartVisualizer {
 
   private draw() {
     this.ctx.clearRect(0, 0, this.canvasRef.width, this.canvasRef.height);
-    this.drawAxis();
+
     this.ctx.globalAlpha = this.transparency;
     this.drawSamples([...this.pointsWithIds]);
     this.ctx.globalAlpha = 1;
@@ -244,6 +244,13 @@ export class ScatterChartVisualizer {
     if (this.selectedSample) {
       this.emphasizeSample(this.selectedSample, "yellow");
     }
+    
+    // clear out of space
+    this.ctx.clearRect(0, 0, this.canvasRef.width, this.margin);
+    this.ctx.clearRect(0, 0, this.margin, this.canvasRef.height);
+    this.ctx.clearRect(this.canvasRef.width - this.margin, 0, this.margin, this.canvasRef.height);
+    this.ctx.clearRect(0, this.canvasRef.height - this.margin, this.canvasRef.width, this.margin);
+    this.drawAxis();
   }
 
   private emphasizeSample(sample: ExtendedPoint, color?: string) {
@@ -258,6 +265,7 @@ export class ScatterChartVisualizer {
   private drawAxis() {
     const size = this.margin * 0.4;
     const { left, right, top, bottom } = this.pixelBounds;
+
     // x-axis
     drawText(this.ctx, {
       text: this.axisLabels.x,
