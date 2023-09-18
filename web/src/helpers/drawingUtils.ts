@@ -3,7 +3,7 @@ import { Point } from "../common";
 export const drawPoint = (ctx: CanvasRenderingContext2D, loc: Point, color: string = "black", size: number = 8) => {
   ctx.beginPath();
   ctx.fillStyle = color;
-  ctx.arc(...loc, size / 2, 0, Math.PI * 2);
+  ctx.arc(loc[0], loc[1], size / 2, 0, Math.PI * 2);
   ctx.fill();
 };
 

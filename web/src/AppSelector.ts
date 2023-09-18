@@ -1,58 +1,62 @@
-import { AppBase } from "./apps/App.Base";
 import { DataCreatorApp } from "./apps/DataCreatorApp";
+import { DataTableWithChart } from "./apps/DataTableWithChart.App";
 import { DataViewerApp } from "./apps/DataViewerApp";
-import { FeaturesExplorerApp } from "./apps/FeatureExplorerApp";
+import { ScatterChartApp } from "./apps/ScatterChartApp";
+import { UnMountable } from "./common";
+import { generateMockCarData } from "./helpers/mockData";
+
+type Features = "dataViewer" | "dataCreator" | "featureExplorer" | "tableWithChart";
+
+type SelectedFeatures = {
+  [k in Features]: boolean;
+};
+
+const FEATURES: SelectedFeatures = {
+  dataViewer: true,
+  dataCreator: true,
+  featureExplorer: false,
+  tableWithChart: true,
+};
+
+type FeatureIds = { [k in Features]: string };
+
+const IDs: FeatureIds = {
+  dataCreator: "data-creator",
+  dataViewer: "data-viewer",
+  featureExplorer: "features-explorer",
+  tableWithChart: "table-with-chart",
+};
+
+const AppBtnText: FeatureIds = {
+  dataViewer: "Data Viewer",
+  dataCreator: "Data Creator",
+  featureExplorer: "Feature Explorer",
+  tableWithChart: "Table with Chart",
+};
+
+const mockData = generateMockCarData(1000);
 
 export class AppSelector {
   private container: Element;
   private appListContainerRef: HTMLUListElement;
 
-  private dataViewerContainer: HTMLDivElement;
-  private dataCreatorContainer: HTMLDivElement;
-  private featuresExplorerContainer: HTMLDivElement;
+  private mountedApp?: UnMountable;
 
-  private viewerBtn: HTMLLIElement;
-  private creatorBtn: HTMLLIElement;
-  private featuresExplorerBtm: HTMLLIElement;
-
-  private mountedApp?: AppBase;
-
-  private dataCreatorId = "data-creator";
-  private dataViewerId = "data-viewer";
-  private featuresExplorerId = "features-explorer";
-
-  constructor(container: Element) {
+  constructor(container: Element, features: SelectedFeatures) {
     this.container = container;
-
-    // containers
-    // data-viewer
-    this.dataViewerContainer = document.createElement("div");
-    this.dataViewerContainer.id = this.dataViewerId;
-    // data-creator
-    this.dataCreatorContainer = document.createElement("div");
-    this.dataCreatorContainer.id = this.dataCreatorId;
-    // data-explorer
-    this.featuresExplorerContainer = document.createElement("div");
-    this.featuresExplorerContainer.id = this.featuresExplorerId;
 
     // setup app list
     this.appListContainerRef = document.createElement("ul");
+    const entries = Object.entries(features);
+    for (let [app, isEnabled] of entries) {
+      if (isEnabled) {
+        const application = app as Features;
+        const text = AppBtnText[application];
+        this.makeAppButton(this.appListContainerRef, application, text);
+      }
+    }
 
-    this.viewerBtn = document.createElement("li");
-    this.viewerBtn.innerText = "View data";
-
-    this.creatorBtn = document.createElement("li");
-    this.creatorBtn.innerText = "Create data";
-
-    this.featuresExplorerBtm = document.createElement("li");
-    this.featuresExplorerBtm.innerText = "Feature Explorer";
-
-    this.appListContainerRef.appendChild(this.featuresExplorerBtm);
-    this.appListContainerRef.appendChild(this.viewerBtn);
-    this.appListContainerRef.appendChild(this.creatorBtn);
     this.container.appendChild(this.appListContainerRef);
-
-    this.setupEventListeners();
   }
 
   private clearApps() {
@@ -61,23 +65,32 @@ export class AppSelector {
     }
   }
 
-  private setupEventListeners() {
-    this.creatorBtn.onclick = () => {
+  private makeApp(appType: Features, container: HTMLDivElement) {
+    switch (appType) {
+      case "dataCreator":
+        return new DataCreatorApp(container);
+      case "dataViewer":
+        return new DataViewerApp(container);
+      case "featureExplorer":
+        return new ScatterChartApp(container, mockData);
+      case "tableWithChart":
+        return new DataTableWithChart(container, mockData);
+    }
+  }
+
+  private makeAppButton(container: Element, app: keyof SelectedFeatures, btnText: string) {
+    const liButton = document.createElement("li");
+    liButton.innerText = btnText;
+
+    liButton.onclick = () => {
       this.clearApps();
-      this.container.appendChild(this.dataCreatorContainer);
-      this.mountedApp = new DataCreatorApp(this.dataCreatorContainer);
+      const appContainer = document.createElement("div");
+      appContainer.id = IDs[app];
+      this.container.appendChild(appContainer);
+      this.mountedApp = this.makeApp(app, appContainer);
     };
 
-    this.viewerBtn.onclick = () => {
-      this.clearApps();
-      this.container.appendChild(this.dataViewerContainer);
-      this.mountedApp = new DataViewerApp(this.dataViewerContainer);
-    };
-
-    this.featuresExplorerBtm.onclick = () => {
-      this.clearApps();
-      this.container.appendChild(this.featuresExplorerContainer);
-      this.mountedApp = new FeaturesExplorerApp(this.featuresExplorerContainer);
-    };
+    container.appendChild(liButton);
+    return liButton;
   }
 }

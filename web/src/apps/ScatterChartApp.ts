@@ -1,17 +1,27 @@
 import { ChartData } from "../common";
-import { generateMockCarData } from "../helpers/mockData";
 import { AppBase } from "./App.Base";
-import { ScatterChartVisualizer } from "./components/ScatterChartVisualizer";
+import { ScatterChartOptions, ScatterChartVisualizer } from "./components/ScatterChartVisualizer";
 
-export class FeaturesExplorerApp extends AppBase {
+export class ScatterChartApp extends AppBase {
   private inputRef: HTMLInputElement;
   private data?: [];
 
   private chartContainer?: HTMLDivElement;
   private chart?: ScatterChartVisualizer;
 
-  constructor(container: Element) {
-    super(container, "Feature Explorer");
+  constructor(container: Element, data: ChartData) {
+    super(container, "Scatter Chart");
+    const size = 300;
+    this.chartContainer = document.createElement("div");
+    this.chartContainer.style.position = "fixed";
+    this.chartContainer.style.left = "55%";
+    this.chartContainer.style.top = "30%";
+    const options: ScatterChartOptions = {
+      labels: { x: "km", y: "price" },
+      size: 300,
+    };
+    this.container.appendChild(this.chartContainer);
+    this.chart = new ScatterChartVisualizer(this.chartContainer, data, options);
 
     // // upload input
     // this.inputRef = document.createElement("input");
@@ -33,15 +43,5 @@ export class FeaturesExplorerApp extends AppBase {
     // });
     // // add to the dom
     // this.container.appendChild(this.inputRef);
-    const data = generateMockCarData(10000);
-    this.initializeChart(data);
-  }
-
-  initializeChart(data: ChartData) {
-    this.chartContainer = document.createElement("div");
-    if (this.data) {
-      this.chart = new ScatterChartVisualizer(this.chartContainer, data, {});
-    }
-    this.container.appendChild(this.chartContainer);
   }
 }

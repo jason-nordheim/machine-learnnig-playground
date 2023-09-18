@@ -83,3 +83,32 @@ canvas {
 .sketch-viewer > canvas {
   margin: 10px 10px;
 }
+
+
+.table {
+  display: flex;
+  flex-direction: column;
+  align-items: baseline;
+  justify-content: center;
+}
+
+.row {
+  flex-direction: row;
+  width: 100%;
+}
+
+.row > span {
+  border: 1px solid black;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: small;
+  text-align: start;
+}
+.row > span.data {
+  padding-left: 2px;
+  flex: 1
+}
+.row > span.id { 
+  width: 20px;
+  text-align: center;
+}

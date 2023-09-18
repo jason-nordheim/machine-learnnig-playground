@@ -19,7 +19,7 @@ export const remap = (oldA: number, oldB: number, newA: number, newB: number, v:
 
 export const remapPoint = (oldBounds: Bounds, newBounds: Bounds, point: Point): Point => {
   return [
-    remap(oldBounds.left, oldBounds.right, newBounds.left, oldBounds.right, point[0]),
+    remap(oldBounds.left, oldBounds.right, newBounds.left, newBounds.right, point[0]),
     remap(oldBounds.top, oldBounds.bottom, newBounds.top, newBounds.bottom, point[1]),
   ];
 };

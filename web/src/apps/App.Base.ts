@@ -1,4 +1,6 @@
-export class AppBase {
+import { UnMountable } from "../common";
+
+export class AppBase implements UnMountable {
   protected container: Element;
 
   constructor(container: Element, title?: string) {

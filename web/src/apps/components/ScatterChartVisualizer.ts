@@ -11,9 +11,7 @@ import {
   subtract,
 } from "../../helpers/math";
 import { drawPoint, drawText } from "../../helpers/drawingUtils";
-import { ChartData, FeatureSpec, GenericData, Point, PointWithId } from "../../common";
-
-type AxisLabels = {};
+import { AxisLabels, ChartData, FeatureSpec, GenericData, Point, PointWithId } from "../../common";
 
 type ChartStyles = {
   bgColor: string;
@@ -21,10 +19,9 @@ type ChartStyles = {
   margin?: number;
 };
 
-type ScatterChartOptions = {
+export type ScatterChartOptions = {
   size: number;
   labels: AxisLabels;
-  styles?: ChartStyles;
 };
 
 type DragInfo = {
@@ -48,21 +45,23 @@ type Bounds = {
 
 const DEFAULT_OPTIONS = {
   size: 400,
-  labels: {},
-  styles: {
-    bgColor: "white",
-    transparency: 1,
-  },
+  labels: { x: "x", y: "y" },
+};
+
+const DEFAULT_STYLES = {
+  transparency: 0.5,
+  bgColor: "white",
 };
 
 export class ScatterChartVisualizer {
-  private container: Element;
+  private container: HTMLDivElement;
   private canvasRef: HTMLCanvasElement;
 
   // configuration options
   private margin: number;
   private size: number;
   private transparency: number;
+  private axisLabels: AxisLabels;
 
   private hoveredSample: any;
   private selectedSample: any;
@@ -72,30 +71,26 @@ export class ScatterChartVisualizer {
 
   private pointsWithIds: PointWithId[] = [];
 
-  constructor(container: Element, data: ChartData, options: ScatterChartOptions) {
+  constructor(container: HTMLDivElement, data: ChartData, options: ScatterChartOptions, styles?: ChartStyles) {
+    this.container = container;
     this.pointsWithIds = data.points;
 
-    this.container = container;
+    // options
     this.margin = options.size * 0.11;
     this.size = options.size;
-    this.transparency = options.styles?.transparency || DEFAULT_OPTIONS.styles.transparency;
+    this.transparency = styles?.transparency || DEFAULT_STYLES.transparency;
+    this.axisLabels = options.labels;
 
     // setup canvas
     this.canvasRef = document.createElement("canvas");
     this.canvasRef.width = this.size;
     this.canvasRef.height = this.size;
-    this.canvasRef.style.backgroundColor = options?.styles?.bgColor
-      ? options?.styles?.bgColor
-      : DEFAULT_OPTIONS.styles.bgColor;
-
-    // bounds
-    this.pixelBounds = this.getPixelBounds();
-    this.dataBounds = this.getDataBounds();
-
-    // add to dom
+    this.canvasRef.style.backgroundColor = styles?.bgColor ? styles.bgColor : DEFAULT_STYLES.bgColor;
     this.container.appendChild(this.canvasRef);
 
-    // draw
+    // setup bound
+    this.pixelBounds = this.getPixelBounds();
+    this.dataBounds = this.getDataBounds();
     this.draw();
   }
 
@@ -197,30 +192,36 @@ export class ScatterChartVisualizer {
   }
 
   private drawAxis() {
-    const { left, right, top, bottom } = this.getPixelBounds();
-    drawText({ ctx: this.ctx, text: "x-axis", loc: [this.canvasRef.width / 2, bottom + this.margin / 2] });
+    const size = this.margin * 0.4;
+    const { left, right, top, bottom } = this.pixelBounds;
+    drawText({
+      ctx: this.ctx,
+      text: this.axisLabels.x,
+      loc: [this.canvasRef.width / 2, bottom + this.margin / 2],
+      size,
+    });
 
     this.ctx.save();
 
     this.ctx.translate((left - this.margin) / 2, this.canvasRef.height / 2);
     this.ctx.rotate(-Math.PI / 2);
+    drawText({ ctx: this.ctx, text: this.axisLabels.y, loc: [0, size], size });
+    this.ctx.restore();
   }
 
   private drawSamples() {
-    this.pointsWithIds.forEach((s) => {
-      const { point } = s;
-      const pixelLoc = remapPoint(this.getDataBounds(), this.getPixelBounds(), point);
-      drawPoint(this.ctx, pixelLoc);
-    });
+    for (let i = 0; i < this.pointsWithIds.length; i++) {
+      const point = remapPoint(this.dataBounds, this.pixelBounds, this.pointsWithIds[i].point);
+      drawPoint(this.ctx, point);
+    }
   }
 
   private getPixelBounds() {
-    const canvas = this.canvasRef.getBoundingClientRect();
     const bounds = {
       left: this.margin,
-      right: canvas.width - this.margin,
+      right: this.size - this.margin,
       top: this.margin,
-      bottom: canvas.height - this.margin,
+      bottom: this.size - this.margin,
     };
     return bounds;
   }

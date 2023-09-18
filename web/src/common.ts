@@ -1,3 +1,7 @@
+export interface UnMountable {
+  unmount: () => void;
+}
+
 export type SessionData = {
   name?: string;
   sessionId?: number;
@@ -38,4 +42,9 @@ export type GenericData = { point: [number, number]; xLabel: string; yLabel: num
 export type ChartData = {
   points: PointWithId[];
   axisLabels: { x: string; y: string };
+};
+
+export type AxisLabels = {
+  x: string;
+  y: string;
 };
