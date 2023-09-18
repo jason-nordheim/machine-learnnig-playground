@@ -1,3 +1,4 @@
+import { AppBase } from "./App.Base";
 import { DataCreatorApp } from "./DataCreatorApp";
 import { DataViewerApp } from "./DataViewerApp";
 import { FeaturesExplorerApp } from "./FeatureExplorerApp";
@@ -14,9 +15,7 @@ export class AppSelector {
   private creatorBtn: HTMLLIElement;
   private featuresExplorerBtm: HTMLLIElement;
 
-  private dataCreator?: DataCreatorApp;
-  private dataViewer?: DataViewerApp;
-  private featuresExplorer: FeaturesExplorerApp;
+  private mountedApp?: AppBase;
 
   private dataCreatorId = "data-creator";
   private dataViewerId = "data-viewer";
@@ -26,10 +25,13 @@ export class AppSelector {
     this.container = container;
 
     // containers
+    // data-viewer
     this.dataViewerContainer = document.createElement("div");
-    this.dataViewerContainer.id = this.dataCreatorId;
+    this.dataViewerContainer.id = this.dataViewerId;
+    // data-creator
     this.dataCreatorContainer = document.createElement("div");
     this.dataCreatorContainer.id = this.dataCreatorId;
+    // data-explorer
     this.featuresExplorerContainer = document.createElement("div");
     this.featuresExplorerContainer.id = this.featuresExplorerId;
 
@@ -54,36 +56,28 @@ export class AppSelector {
   }
 
   private clearApps() {
-    const appIds = [this.dataCreatorId, this.dataViewerId, this.featuresExplorerId];
-    appIds.forEach((appId) => {
-      const element = this.container.querySelector(`#${appId}`);
-      if (element && element instanceof HTMLDivElement) {
-        while (element.hasChildNodes()) {
-          element.removeChild(element.children[0]);
-        }
-        this.container.removeChild(element);
-      }
-    });
-    console.log("apps cleared");
+    if (this.mountedApp) {
+      this.mountedApp.unmount();
+    }
   }
 
   private setupEventListeners() {
     this.creatorBtn.onclick = () => {
       this.clearApps();
       this.container.appendChild(this.dataCreatorContainer);
-      this.dataCreator = new DataCreatorApp(this.dataCreatorContainer);
+      this.mountedApp = new DataCreatorApp(this.dataCreatorContainer);
     };
 
     this.viewerBtn.onclick = () => {
       this.clearApps();
       this.container.appendChild(this.dataViewerContainer);
-      this.dataViewer = new DataViewerApp(this.dataViewerContainer);
+      this.mountedApp = new DataViewerApp(this.dataViewerContainer);
     };
 
     this.featuresExplorerBtm.onclick = () => {
       this.clearApps();
       this.container.appendChild(this.featuresExplorerContainer);
-      this.featuresExplorer = new FeaturesExplorerApp(this.featuresExplorerContainer);
+      this.mountedApp = new FeaturesExplorerApp(this.featuresExplorerContainer);
     };
   }
 }
