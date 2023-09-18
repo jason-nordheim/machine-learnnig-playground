@@ -69,8 +69,12 @@ export class ScatterChartVisualizer {
 
   private pixelBounds: Bounds;
   private dataBounds: Bounds;
+  private defaultDataBounds: Bounds;
 
   private pointsWithIds: PointWithId[] = [];
+
+  private dataTrans: DataTrans;
+  private dragInfo: DragInfo;
 
   constructor(container: HTMLDivElement, data: ChartData, options: ScatterChartOptions, styles?: ChartStyles) {
     this.container = container;
@@ -92,96 +96,72 @@ export class ScatterChartVisualizer {
     // setup bound
     this.pixelBounds = this.getPixelBounds();
     this.dataBounds = this.getDataBounds();
+    this.defaultDataBounds = this.getDataBounds();
+
+    // setup dragging
+    this.dataTrans = {
+      offset: [0, 0],
+      scale: 1,
+    };
+    this.dragInfo = {
+      start: [0, 0],
+      end: [0, 0],
+      offset: [0, 0],
+      isDragging: false,
+    };
+
     this.draw();
-  }
 
-  getPosition(evt: MouseEvent | TouchEvent): [number, number] {
-    if (evt instanceof MouseEvent) {
-      const { offsetX, offsetY } = evt;
-      const x = Math.round(offsetX);
-      const y = Math.round(offsetY);
-      return [x, y];
-    } else if (evt instanceof TouchEvent) {
-      evt.preventDefault();
-      const loc = evt.touches[0];
-      const rect = this.canvasRef.getBoundingClientRect();
-      const x = Math.round(loc.clientX);
-      const y = Math.round(loc.clientY - rect.top);
-      return [x, y];
-    }
-    throw new Error("Unsupported event provided");
-  }
-
-  private addEventlisteners() {
-    // // mouse down
-    // this.canvasRef.onmousedown = (evt) => {
-    //   this.dragInfo = {
-    //     start: this.getPosition(evt),
-    //     isDragging: true,
-    //     end: [0, 0],
-    //     offset: [0, 0],
-    //   };
-    // };
-    // // mouse move
-    // this.canvasRef.onmousemove = (evt) => {
-    //   if (this.dragInfo.isDragging) {
-    //     const location = this.getPosition(evt);
-    //     this.dragInfo.end = location;
-    //     this.dragInfo.offset = scale(subtract(this.dragInfo.start, this.dragInfo.end), this.dataTrans.scale ** 2);
-    //     const newOffset = add(this.dataTrans.offset, this.dragInfo.offset);
-    //   }
-    //   const pLoc = this.getPosition(evt);
-    //   const pPoints = this.data.map((sample) => {
-    //     return remapPoint(this.dataBounds, this.pixelBounds, [sample.path_count, sample.point_count]);
-    //   });
-    //   const index = getNearest(pLoc, pPoints);
-    //   const nearest = this.data[index];
-    //   const dist = distance(pPoints[index], pLoc);
-    //   const margin = this.options.styles!.margin!;
-    //   if (dist < margin / 2) {
-    //     this.hoveredSample = nearest;
-    //   } else {
-    //     this.hoveredSample = null;
-    //   }
-    //   this.draw();
-    // };
-    // // mouse up
-    // this.canvasRef.onmouseup = () => {
-    //   this.dataTrans.offset = add(this.dataTrans.offset, this.dragInfo.offset);
-    //   this.dragInfo.isDragging = false;
-    // };
-    // // on wheel
-    // this.canvasRef.onwheel = (evt) => {
-    //   const dir = Math.sign(evt.deltaY);
-    //   const step = 0.02;
-    //   this.dataTrans.scale += dir * step;
-    //   this.dataTrans.scale = Math.max(step, Math.min(2, this.dataTrans.scale));
-    //   this.draw();
-    //   evt.preventDefault();
-    // };
-    // this.canvasRef.onclick = (evt) => {
-    //   if (!equals(this.dragInfo.offset, [0, 0])) {
-    //     return;
-    //   }
-    //   const loc = this.getPosition(evt);
-    //   if (this.hoveredSample) {
-    //     if (this.selectedSample == this.hoveredSample) {
-    //       this.selectedSample = null;
-    //     } else {
-    //       this.selectedSample = this.hoveredSample;
-    //     }
-    //   } else {
-    //     this.selectedSample = null;
-    //   }
-    //   if (loc) {
-    //     this.selectedSample = loc;
-    //   }
-    //   this.draw();
-    // };
+    this.addEventListeners();
   }
 
   private get ctx() {
     return this.canvasRef.getContext("2d")!;
+  }
+
+  private getMousePos(evt: MouseEvent, dataSpace = false) {
+    const rect = this.canvasRef.getBoundingClientRect();
+    const pixelLoc: Point = [evt.clientX - rect.left, evt.clientY - rect.top];
+    if (dataSpace) {
+      const dataLoc = remapPoint(this.pixelBounds, this.defaultDataBounds, pixelLoc);
+      return dataLoc;
+    }
+    return pixelLoc;
+  }
+
+  private updateDataBounds(offset: Point) {
+    const def = this.defaultDataBounds;
+    const newBounds = {
+      left: def.left + offset[0],
+      right: def.right + offset[0],
+      top: def.top + offset[1],
+      bottom: def.bottom + offset[1],
+    };
+    this.dataBounds = newBounds;
+  }
+
+  private addEventListeners() {
+    this.canvasRef.onmousedown = (evt) => {
+      const dataLoc = this.getMousePos(evt, true);
+      this.dragInfo.start = dataLoc;
+      this.dragInfo.isDragging = true;
+    };
+
+    this.canvasRef.onmousemove = (evt) => {
+      if (this.dragInfo.isDragging) {
+        const dataLoc = this.getMousePos(evt, true);
+        this.dragInfo.end = dataLoc;
+        this.dragInfo.offset = subtract(this.dragInfo.start, this.dragInfo.end);
+        const newOffset = add(this.dataTrans.offset, this.dragInfo.offset);
+        this.updateDataBounds(newOffset);
+        this.draw();
+      }
+    };
+
+    this.canvasRef.onmouseup = (evt) => {
+      this.dataTrans.offset = add(this.dataTrans.offset, this.dragInfo.offset);
+      this.dragInfo.isDragging = false;
+    };
   }
 
   private draw() {
@@ -248,6 +228,7 @@ export class ScatterChartVisualizer {
       align: "left",
       vAlign: "bottom",
     });
+
     this.ctx.restore();
 
     const dataMax = remapPoint(this.pixelBounds, this.dataBounds, [right, top]);
