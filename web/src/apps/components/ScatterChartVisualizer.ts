@@ -137,7 +137,21 @@ export class ScatterChartVisualizer {
       top: def.top + offset[1],
       bottom: def.bottom + offset[1],
     };
-    this.dataBounds = newBounds;
+
+    const center: Point = [
+      (this.dataBounds.left + this.dataBounds.right) / 2,
+      (this.dataBounds.top + this.dataBounds.bottom) / 2,
+    ];
+
+    const scale = this.dataTrans.scale;
+    const scaledBounds = {
+      left: lerp(center[0], newBounds.left, scale),
+      right: lerp(center[0], newBounds.right, scale),
+      top: lerp(center[1], newBounds.top, scale),
+      bottom: lerp(center[1], newBounds.bottom, scale),
+    };
+
+    this.dataBounds = scaledBounds;
   }
 
   private addEventListeners() {
@@ -161,6 +175,18 @@ export class ScatterChartVisualizer {
     this.canvasRef.onmouseup = (evt) => {
       this.dataTrans.offset = add(this.dataTrans.offset, this.dragInfo.offset);
       this.dragInfo.isDragging = false;
+      evt.preventDefault();
+    };
+
+    this.canvasRef.onwheel = (evt) => {
+      const direction = Math.sign(evt.deltaY);
+      const step = 0.02;
+
+      this.dataTrans.scale = this.dataTrans.scale + direction * step;
+      this.updateDataBounds(this.dataTrans.offset);
+
+      this.draw();
+      evt.preventDefault();
     };
   }
 
