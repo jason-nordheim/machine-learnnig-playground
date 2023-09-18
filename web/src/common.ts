@@ -51,3 +51,5 @@ export type AxisLabels = {
   x: string;
   y: string;
 };
+
+export type onClickItemEventHandler = (item: ExtendedPoint, scrollIntoView: boolean) => void;

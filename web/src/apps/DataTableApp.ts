@@ -1,17 +1,8 @@
-import { ChartData, ExtendedPoint } from "../common";
+import { ChartData, ExtendedPoint, onClickItemEventHandler } from "../common";
 import { formatNumber } from "../helpers/math";
 import { AppBase } from "./App.Base";
 
-const createTableCell = ({
-  value,
-  inside,
-  type,
-}: {
-  value: string;
-  inside?: HTMLElement;
-  width?: number;
-  type?: "id" | "data";
-}) => {
+const createTableCell = ({ value, inside, type }: { value: string; inside?: HTMLElement; type?: "id" | "data" }) => {
   const element = document.createElement("span");
   element.innerText = value;
   if (type) {
@@ -23,20 +14,15 @@ const createTableCell = ({
   return element;
 };
 
-const DEFAULTS = {
-  size: {
-    row: {
-      id: 20,
-      data: 70,
-    },
-  },
+type DataTableOptions = {
+  onClickItem?: onClickItemEventHandler;
 };
 
 export class DataTableApp extends AppBase {
   private data: ExtendedPoint[] = [];
   private axisLabels?: { x: string; y: string };
 
-  constructor(container: Element, data: ChartData) {
+  constructor(container: Element, data: ChartData, options: DataTableOptions) {
     super(container, "Data Table");
 
     this.data = data.points;
@@ -47,9 +33,6 @@ export class DataTableApp extends AppBase {
     const headerRow = document.createElement("div");
     headerRow.classList.add("row");
 
-    const idColumnSize = DEFAULTS.size.row.id;
-    const dataColumnSize = DEFAULTS.size.row.data;
-
     createTableCell({ value: "id", inside: headerRow, type: "id" });
     createTableCell({ value: data.axisLabels.x, inside: headerRow, type: "data" });
     createTableCell({ value: data.axisLabels.y, inside: headerRow, type: "data" });
@@ -57,6 +40,14 @@ export class DataTableApp extends AppBase {
 
     for (let i = 0; i < this.data.length; i++) {
       const row = document.createElement("div");
+      row.id = `sample_${this.data[i].id}`;
+      const { onClickItem } = options;
+      if (onClickItem && typeof onClickItem == "function") {
+        row.onclick = () => {
+          onClickItem(this.data[i], false);
+        };
+      }
+
       row.classList.add("row");
       createTableCell({ value: this.data[i].id, inside: row, type: "id" });
       const valueX = formatNumber(this.data[i].point[0], 2);

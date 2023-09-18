@@ -12,7 +12,15 @@ import {
   subtract,
 } from "../../helpers/math";
 import { drawPoint, drawText } from "../../helpers/drawingUtils";
-import { AxisLabels, ChartData, FeatureSpec, GenericData, Point, ExtendedPoint } from "../../common";
+import {
+  AxisLabels,
+  ChartData,
+  FeatureSpec,
+  GenericData,
+  Point,
+  ExtendedPoint,
+  onClickItemEventHandler,
+} from "../../common";
 
 type PointRenderOptions = "text" | "emoji" | "color";
 
@@ -25,7 +33,9 @@ type ChartStyles = {
 export type ScatterChartOptions = {
   size: number;
   labels: AxisLabels;
+  selectedSample?: ExtendedPoint;
   showPointsAs?: PointRenderOptions;
+  onClickItem?: onClickItemEventHandler;
 };
 
 type DragInfo = {
@@ -51,6 +61,7 @@ const DEFAULT_OPTIONS: Required<ScatterChartOptions> = {
   size: 400,
   labels: { x: "x", y: "y" },
   showPointsAs: "color",
+  onClickItem: () => null,
 };
 
 const DEFAULT_STYLES = {
@@ -80,6 +91,7 @@ export class ScatterChartVisualizer {
 
   private dataTrans: DataTrans;
   private dragInfo: DragInfo;
+  private onSelectItem?: onClickItemEventHandler;
 
   constructor(container: HTMLDivElement, data: ChartData, options: ScatterChartOptions, styles?: ChartStyles) {
     this.container = container;
@@ -91,6 +103,7 @@ export class ScatterChartVisualizer {
     this.transparency = styles?.transparency || DEFAULT_STYLES.transparency;
     this.axisLabels = options.labels;
     this.showPointAs = options?.showPointsAs || DEFAULT_OPTIONS.showPointsAs;
+    this.onSelectItem = options.onClickItem;
 
     // setup canvas
     this.canvasRef = document.createElement("canvas");
@@ -206,6 +219,15 @@ export class ScatterChartVisualizer {
       this.draw();
       evt.preventDefault();
     };
+
+    this.canvasRef.onclick = (evt) => {
+      if (this.hoveredSample) {
+        this.selectedSample = this.hoveredSample;
+        if (this.onSelectItem && typeof this.onSelectItem == "function") {
+          this.onSelectItem(this.selectedSample, true);
+        }
+      }
+    };
   }
 
   private draw() {
@@ -218,12 +240,16 @@ export class ScatterChartVisualizer {
     if (this.hoveredSample) {
       this.emphasizeSample(this.hoveredSample);
     }
+
+    if (this.selectedSample) {
+      this.emphasizeSample(this.selectedSample, "yellow");
+    }
   }
 
-  private emphasizeSample(sample: ExtendedPoint) {
+  private emphasizeSample(sample: ExtendedPoint, color?: string) {
     const loc = remapPoint(this.dataBounds, this.pixelBounds, sample.point);
     const gradient = this.ctx.createRadialGradient(loc[0], loc[1], 0, loc[0], loc[1], this.margin / 2);
-    gradient.addColorStop(0, sample.color || "white");
+    gradient.addColorStop(0, color || sample.color || "white");
     gradient.addColorStop(1, "rgba(255,255,255,0)");
     drawPoint(this.ctx, loc, gradient, this.margin / 2);
     this.drawSamples([sample]);
@@ -362,5 +388,10 @@ export class ScatterChartVisualizer {
     };
 
     return bounds;
+  }
+
+  selectSample(sample: ExtendedPoint) {
+    this.selectedSample = sample;
+    this.draw();
   }
 }

@@ -1,6 +1,13 @@
-import { ChartData, UnMountable } from "../common";
+import { ChartData, ExtendedPoint, UnMountable } from "../common";
 import { DataTableApp } from "./DataTableApp";
 import { ScatterChartApp } from "./ScatterChartApp";
+import { ScatterChartOptions } from "./components/ScatterChartVisualizer";
+
+const opts: ScatterChartOptions = {
+  selectedSample: undefined,
+  labels: { x: "km", y: "price" },
+  size: 400,
+};
 
 export class DataTableWithChart implements UnMountable {
   private rootContainer: Element;
@@ -17,8 +24,24 @@ export class DataTableWithChart implements UnMountable {
 
     this.appContainers = { chart: chartContainer, table: tableContainer };
 
-    this.table = new DataTableApp(this.appContainers.table, data);
-    this.chart = new ScatterChartApp(this.appContainers.chart, data);
+    const onSelectSample = (sample: ExtendedPoint, scrollIntoView = false) => {
+      const currentlyEmphasized = document.querySelectorAll(".emphasize");
+      currentlyEmphasized.forEach((ele) => ele.classList.remove("emphasize"));
+      const element = document.getElementById(`sample_${sample.id}`);
+      element?.classList.add("emphasize");
+      if (scrollIntoView) {
+        element?.scrollIntoView({
+          behavior: "auto",
+          block: "center",
+        });
+      }
+      if (this.chart) {
+        this.chart.selectSample(sample);
+      }
+    };
+
+    this.table = new DataTableApp(this.appContainers.table, data, { onClickItem: onSelectSample });
+    this.chart = new ScatterChartApp(this.appContainers.chart, data, { ...opts, onClickItem: onSelectSample });
 
     this.rootContainer.appendChild(this.appContainers.table);
     this.rootContainer.appendChild(this.appContainers.chart);

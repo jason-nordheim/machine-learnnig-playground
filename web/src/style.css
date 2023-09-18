@@ -109,6 +109,10 @@ canvas {
   flex: 1
 }
 .row > span.id { 
-  width: 20px;
+  width: 40px;
   text-align: center;
+}
+
+.emphasize {
+  background-color: yellow;
 }
