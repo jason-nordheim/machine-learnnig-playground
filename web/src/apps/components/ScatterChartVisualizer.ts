@@ -178,6 +178,8 @@ export class ScatterChartVisualizer {
       const dataLoc = this.getMousePos(evt, true);
       this.dragInfo.start = dataLoc;
       this.dragInfo.isDragging = true;
+      this.dragInfo.end = [0, 0];
+      this.dragInfo.offset = [0, 0];
     };
 
     this.canvasRef.onmousemove = (evt) => {
@@ -206,7 +208,6 @@ export class ScatterChartVisualizer {
     this.canvasRef.onmouseup = (evt) => {
       this.dataTrans.offset = add(this.dataTrans.offset, this.dragInfo.offset);
       this.dragInfo.isDragging = false;
-      evt.preventDefault();
     };
 
     this.canvasRef.onwheel = (evt) => {
@@ -221,11 +222,18 @@ export class ScatterChartVisualizer {
     };
 
     this.canvasRef.onclick = (evt) => {
+      if (!equals(this.dragInfo.offset, [0, 0])) return;
       if (this.hoveredSample) {
-        this.selectedSample = this.hoveredSample;
-        if (this.onSelectItem && typeof this.onSelectItem == "function") {
-          this.onSelectItem(this.selectedSample, true);
+        if (this.selectedSample === this.hoveredSample) {
+          this.selectedSample = undefined;
+        } else {
+          this.selectedSample = this.hoveredSample;
         }
+      } else {
+        this.selectedSample = undefined;
+      }
+      if (this.onSelectItem && typeof this.onSelectItem == "function") {
+        this.onSelectItem(this.selectedSample, true);
       }
     };
   }
@@ -244,7 +252,7 @@ export class ScatterChartVisualizer {
     if (this.selectedSample) {
       this.emphasizeSample(this.selectedSample, "yellow");
     }
-    
+
     // clear out of space
     this.ctx.clearRect(0, 0, this.canvasRef.width, this.margin);
     this.ctx.clearRect(0, 0, this.margin, this.canvasRef.height);

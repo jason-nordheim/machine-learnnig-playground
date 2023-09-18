@@ -24,19 +24,22 @@ export class DataTableWithChart implements UnMountable {
 
     this.appContainers = { chart: chartContainer, table: tableContainer };
 
-    const onSelectSample = (sample: ExtendedPoint, scrollIntoView = false) => {
+    const onSelectSample = (sample?: ExtendedPoint, scrollIntoView = false) => {
       const currentlyEmphasized = document.querySelectorAll(".emphasize");
       currentlyEmphasized.forEach((ele) => ele.classList.remove("emphasize"));
-      const element = document.getElementById(`sample_${sample.id}`);
-      element?.classList.add("emphasize");
-      if (scrollIntoView) {
-        element?.scrollIntoView({
-          behavior: "auto",
-          block: "center",
-        });
-      }
-      if (this.chart) {
-        this.chart.selectSample(sample);
+
+      if (sample) {
+        const element = document.getElementById(`sample_${sample.id}`);
+        element?.classList.add("emphasize");
+        if (scrollIntoView) {
+          element?.scrollIntoView({
+            behavior: "auto",
+            block: "center",
+          });
+        }
+        if (this.chart) {
+          this.chart.selectSample(sample);
+        }
       }
     };
 
