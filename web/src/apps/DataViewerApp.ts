@@ -1,6 +1,6 @@
+import { CombinedData } from "../common";
 import { AppBase } from "./App.Base";
-import { SketchViewer } from "./SketchViewer";
-import { CombinedData } from "./common";
+import { SketchViewer } from "./components/SketchViewer";
 
 export class DataViewerApp extends AppBase {
   private inputRef: HTMLInputElement;

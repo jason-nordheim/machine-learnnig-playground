@@ -1,6 +1,6 @@
+import { SessionData } from "../common";
 import { AppBase } from "./App.Base";
-import { SketchPad } from "./SketchPad";
-import { SessionData } from "./main";
+import { SketchPad } from "./components/SketchPad";
 
 export class DataCreatorApp extends AppBase {
   private labels: string[] = ["car", "fish", "tree", "bicycle", "guitar", "pencil", "clock"];

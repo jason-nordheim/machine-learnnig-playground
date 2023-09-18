@@ -1,7 +1,7 @@
-import { AppBase } from "./App.Base";
-import { DataCreatorApp } from "./DataCreatorApp";
-import { DataViewerApp } from "./DataViewerApp";
-import { FeaturesExplorerApp } from "./FeatureExplorerApp";
+import { AppBase } from "./apps/App.Base";
+import { DataCreatorApp } from "./apps/DataCreatorApp";
+import { DataViewerApp } from "./apps/DataViewerApp";
+import { FeaturesExplorerApp } from "./apps/FeatureExplorerApp";
 
 export class AppSelector {
   private container: Element;
