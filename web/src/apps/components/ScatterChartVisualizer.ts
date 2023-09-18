@@ -1,26 +1,6 @@
-import {
-  add,
-  distance,
-  equals,
-  formatNumber,
-  getNearest,
-  invLerp,
-  lerp,
-  remap,
-  remapPoint,
-  scale,
-  subtract,
-} from "../../helpers/math";
+import { add, distance, equals, formatNumber, getNearest, lerp, remapPoint, scale, subtract } from "../../helpers/math";
 import { drawPoint, drawText } from "../../helpers/drawingUtils";
-import {
-  AxisLabels,
-  ChartData,
-  FeatureSpec,
-  GenericData,
-  Point,
-  ExtendedPoint,
-  onClickItemEventHandler,
-} from "../../common";
+import { AxisLabels, ChartData, Point, ExtendedPoint, onClickItemEventHandler } from "../../common";
 
 type PointRenderOptions = "text" | "emoji" | "color";
 
@@ -33,7 +13,6 @@ type ChartStyles = {
 export type ScatterChartOptions = {
   size: number;
   labels: AxisLabels;
-  selectedSample?: ExtendedPoint;
   showPointsAs?: PointRenderOptions;
   onClickItem?: onClickItemEventHandler;
 };
@@ -186,7 +165,7 @@ export class ScatterChartVisualizer {
       if (this.dragInfo.isDragging) {
         const dataLoc = this.getMousePos(evt, true);
         this.dragInfo.end = dataLoc;
-        this.dragInfo.offset = subtract(this.dragInfo.start, this.dragInfo.end);
+        this.dragInfo.offset = scale(subtract(this.dragInfo.start, this.dragInfo.end), this.dataTrans.scale ** 2);
         const newOffset = add(this.dataTrans.offset, this.dragInfo.offset);
         this.updateDataBounds(newOffset);
       }
