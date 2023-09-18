@@ -1,13 +1,6 @@
 import { AppBase } from "./App.Base";
 import { SketchViewer } from "./SketchViewer";
-
-type CombinedData = {
-  session: number;
-  student: string;
-  drawings: {
-    [k: string]: number[][][];
-  };
-};
+import { CombinedData } from "./common";
 
 export class DataViewerApp extends AppBase {
   private inputRef: HTMLInputElement;
