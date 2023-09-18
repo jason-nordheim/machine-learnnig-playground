@@ -181,8 +181,8 @@ export class ScatterChartVisualizer {
     this.canvasRef.onwheel = (evt) => {
       const direction = Math.sign(evt.deltaY);
       const step = 0.02;
-
-      this.dataTrans.scale = this.dataTrans.scale + direction * step;
+      const scale = this.dataTrans.scale + direction * step;
+      this.dataTrans.scale = Math.max(step, Math.min(2, scale));
       this.updateDataBounds(this.dataTrans.offset);
 
       this.draw();
