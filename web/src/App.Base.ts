@@ -3,6 +3,7 @@ export class AppBase {
 
   constructor(container: Element, title?: string) {
     this.container = container;
+    this.container.classList.add("app");
     if (title) {
       this.AddTitle(title);
     }
