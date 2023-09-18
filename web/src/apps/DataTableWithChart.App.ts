@@ -4,7 +4,6 @@ import { ScatterChartApp } from "./ScatterChartApp";
 import { ScatterChartOptions } from "./components/ScatterChartVisualizer";
 
 const opts: ScatterChartOptions = {
-  selectedSample: undefined,
   labels: { x: "km", y: "price" },
   size: 400,
 };
